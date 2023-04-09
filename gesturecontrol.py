@@ -1,8 +1,9 @@
 import cv2
 import numpy as np
-from HandTrackingModule import HandDetector  # 手不检测方法
+from HandTrackingModule import HandDetector  # 手部检测方法
 import time
 import autopy
+# 安装pip install pywin32
 import win32gui, win32process, psutil
 from ctypes import cast, POINTER
 from comtypes import CLSCTX_ALL
@@ -28,6 +29,8 @@ pTime = 0  # 设置第一帧开始处理的起始时间
 pLocx, pLocy = 0, 0  # 上一帧时的鼠标所在位置
 smooth = 5  # 自定义平滑系数，让鼠标移动平缓一些
 frame = 0  # 初始化累计帧数
+upframe = 0 # 上键处理的间隔帧率
+downframe=0 # 下键处理的间隔帧率
 toggle = False  # 标志变量
 prev_state = [1, 1, 1, 1, 1]  # 初始化上一帧状态
 current_state = [1, 1, 1, 1, 1]  # 初始化当前正状态
@@ -108,7 +111,7 @@ while True:
             print("释放左键")
 
         # 只有食指和中指竖起，就认为是移动鼠标
-        if fingers[1] == 1 and fingers[2] == 1 and sum(fingers) == 2 and frame >= 1:
+        if fingers[0]==1 and  fingers[1] == 1 and fingers[2] == 1 and sum(fingers) == 3 and frame >= 1:
             # （8）移动鼠标
             autopy.mouse.move(cLocx, cLocy)  # 给出鼠标移动位置坐标
 
@@ -117,20 +120,19 @@ while True:
             # 更新前一帧的鼠标所在位置坐标，将当前帧鼠标所在位置，变成下一帧的鼠标前一帧所在位置
             pLocx, pLocy = cLocx, cLocy
 
-            # （9）如果食指和中指都竖起，指尖距离小于某个值认为是单击鼠标
-            # 当指间距离小于43（像素距离）就认为是点击鼠标
-            if distance < 43 and frame >= 1:
-                # 在食指尖画个绿色的圆，表示点击鼠标
-                cv2.circle(img, (x1, y1), 15, (0, 255, 0), cv2.FILLED)
-
-                # 左击鼠标
-                autopy.mouse.click(button=autopy.mouse.Button.LEFT, delay=0)
-                cv2.putText(img, "left_click", (150, 50), cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 3)
-                print("左击鼠标")
-            else:
-                cv2.putText(img, "move", (150, 50), cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 3)
+        # （9）如果食指和中指都竖起，指尖距离小于某个值认为是单击鼠标
+        # 当指间距离小于43（像素距离）就认为是点击鼠标
+        elif distance < 43 and fingers[0]==0 and fingers[1] == 1 and fingers[2] == 1 and frame >= 1:
+            # 在食指尖画个绿色的圆，表示点击鼠标
+            cv2.circle(img, (x1, y1), 15, (0, 255, 0), cv2.FILLED)
+            # 左击鼠标
+            autopy.mouse.click(button=autopy.mouse.Button.LEFT, delay=0)
+            cv2.putText(img, "left_click", (150, 50), cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 3)
+            print("左击鼠标")
+        # elif distance < 43 and fingers[0]==0 and fingers[1] == 1 and fingers[2] == 1 and frame >= 1:
+        #     cv2.putText(img, "move", (150, 50), cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 3)
         # 中指弯下食指在上，右击鼠标
-        elif fingers[1] == 1 and fingers[2] == 0 and sum(fingers) == 1 and frame >= 2:
+        elif fingers[1] == 1 and sum(fingers) == 1 and frame >= 2:
             autopy.mouse.click(button=autopy.mouse.Button.RIGHT, delay=0)
             print("右击鼠标")
             cv2.putText(img, "rigth_click", (150, 50), cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 3)
@@ -149,35 +151,39 @@ while True:
 
         # 拇指张开，其他弯曲，按一次上键
         elif fingers == [1, 0, 0, 0, 0] and frame >= 2:
-            cv2.putText(img, "UP", (150, 50), cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 3)
-            if (active_window_process_name == "cloudmusic.exe"):
-                print("#############################################")
-                autopy.key.toggle(autopy.key.Code.LEFT_ARROW, True, [autopy.key.Modifier.CONTROL])
-                autopy.key.toggle(autopy.key.Code.LEFT_ARROW, False, [autopy.key.Modifier.CONTROL])
-                print("上一曲")
-                time.sleep(0.3)
+            print("===========upframe:", upframe)
+            if upframe % 10 != 0 or upframe == 0:
+                upframe += 1
             else:
-                autopy.key.toggle(autopy.key.Code.UP_ARROW, True, [])
-                autopy.key.toggle(autopy.key.Code.UP_ARROW, False, [])
-                print("按下上键")
+                upframe = 0
+                cv2.putText(img, "UP", (150, 50), cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 3)
 
-                time.sleep(0.3)
+                if (active_window_process_name == "cloudmusic.exe"):
+                    print("#############################################")
+                    autopy.key.toggle(autopy.key.Code.LEFT_ARROW, True, [autopy.key.Modifier.CONTROL])
+                    autopy.key.toggle(autopy.key.Code.LEFT_ARROW, False, [autopy.key.Modifier.CONTROL])
+                    print("上一曲")
+                else:
+                    autopy.key.toggle(autopy.key.Code.UP_ARROW, True, [])
+                    autopy.key.toggle(autopy.key.Code.UP_ARROW, False, [])
+                    print("按下上键")
 
         # 拇指弯曲，其他竖直，按一次下键
         elif fingers == [0, 1, 1, 1, 1] and frame >= 2:
-            cv2.putText(img, "Down", (150, 50), cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 3)
-            if (active_window_process_name == "cloudmusic.exe"):
-                print("#############################################")
-                autopy.key.toggle(autopy.key.Code.RIGHT_ARROW, True, [autopy.key.Modifier.CONTROL])
-                autopy.key.toggle(autopy.key.Code.RIGHT_ARROW, False, [autopy.key.Modifier.CONTROL])
-                print("下一曲")
-                time.sleep(0.3)
+            if downframe % 10 != 0  or downframe == 0:
+                downframe += 1
             else:
-                autopy.key.toggle(autopy.key.Code.DOWN_ARROW, True, [])
-                autopy.key.toggle(autopy.key.Code.DOWN_ARROW, False, [])
-
-                print("按下下键")
-                time.sleep(0.3)
+                downframe = 0
+                cv2.putText(img, "Down", (150, 50), cv2.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 3)
+                if (active_window_process_name == "cloudmusic.exe"):
+                    print("#############################################")
+                    autopy.key.toggle(autopy.key.Code.RIGHT_ARROW, True, [autopy.key.Modifier.CONTROL])
+                    autopy.key.toggle(autopy.key.Code.RIGHT_ARROW, False, [autopy.key.Modifier.CONTROL])
+                    print("下一曲")
+                else:
+                    autopy.key.toggle(autopy.key.Code.DOWN_ARROW, True, [])
+                    autopy.key.toggle(autopy.key.Code.DOWN_ARROW, False, [])
+                    print("按下下键")
 
         # 类ok手势，进行调整音量
         elif fingers == [1, 0, 1, 1, 1] and frame >= 5:

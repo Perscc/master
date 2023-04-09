@@ -45,8 +45,8 @@ class HandDetector:
         h, w, c = img.shape
         # print("multi_hand_landmarks")
         # print(self.results.multi_hand_landmarks)
-        print("self.results.multi_handedness")
-        print(self.results.multi_handedness)
+        # print("self.results.multi_handedness")
+        # print(self.results.multi_handedness)
         # self.results.multi_hand_landmarks为21个landmark,21个关键点信息
         # landmark
         # {
