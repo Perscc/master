@@ -10,9 +10,10 @@ import sys
 
 import cv2
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtCore import QTimer, Qt, QCoreApplication
+from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QImage, QPixmap
 from PyQt5.QtWidgets import QButtonGroup
+from matplotlib.backends.backend_qt import MainWindow
 
 
 class Ui_user_main(object):
@@ -20,13 +21,12 @@ class Ui_user_main(object):
         user_main.setObjectName("user_main")
         user_main.setEnabled(True)
         user_main.resize(900, 500)
-        user_main.setDockNestingEnabled(False)
-        user_main.setDockOptions(QtWidgets.QMainWindow.AllowTabbedDocks|QtWidgets.QMainWindow.AnimatedDocks)
+        self.setWindowFlags(Qt.WindowStaysOnTopHint)
         self.action_container = QtWidgets.QWidget(user_main)
         self.action_container.setEnabled(True)
         self.action_container.setObjectName("action_container")
         self.horizontalLayoutWidget = QtWidgets.QWidget(self.action_container)
-        self.horizontalLayoutWidget.setGeometry(QtCore.QRect(70, 410, 800, 31))
+        self.horizontalLayoutWidget.setGeometry(QtCore.QRect(70, 430, 800, 31))
         self.horizontalLayoutWidget.setObjectName("horizontalLayoutWidget")
         self.operation = QtWidgets.QHBoxLayout(self.horizontalLayoutWidget)
         self.operation.setContentsMargins(0, 0, 0, 0)
@@ -104,7 +104,7 @@ class Ui_user_main(object):
         self.control_vol.setObjectName("control_vol")
         self.operation.addWidget(self.control_vol)
         self.cap_img = QtWidgets.QLabel(self.action_container)
-        self.cap_img.setGeometry(QtCore.QRect(138, -25, 700, 450))
+        self.cap_img.setGeometry(QtCore.QRect(138, -20, 700, 450))
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -112,15 +112,6 @@ class Ui_user_main(object):
         self.cap_img.setSizePolicy(sizePolicy)
         self.cap_img.setText("")
         self.cap_img.setObjectName("cap_img")
-        self.exist = QtWidgets.QPushButton(self.action_container)
-        self.exist.setGeometry(QtCore.QRect(0, 450, 900, 32))
-        font = QtGui.QFont()
-        font.setFamily("Heiti SC")
-        font.setBold(True)
-        font.setWeight(75)
-        self.exist.setFont(font)
-        self.exist.setObjectName("exist")
-        self.exist.clicked.connect(self.close_win)
         user_main.setCentralWidget(self.action_container)
         self.statusbar = QtWidgets.QStatusBar(user_main)
         self.statusbar.setObjectName("statusbar")
@@ -139,6 +130,7 @@ class Ui_user_main(object):
         self.timer = QTimer()
         self.frame_rate = 50
         self.start()
+        self.show()
         QtCore.QMetaObject.connectSlotsByName(user_main)
 
     def retranslateUi(self, user_main):
@@ -151,7 +143,6 @@ class Ui_user_main(object):
         self.down.setText(_translate("user_main", "down"))
         self.up.setText(_translate("user_main", "up"))
         self.control_vol.setText(_translate("user_main", "control_vol"))
-        self.exist.setText(_translate("user_main", "exist"))
 
     def start(self):
         try:
@@ -182,7 +173,6 @@ class Ui_user_main(object):
         cv2.destroyAllWindows()
         sys.exit(0)
 
-
     def check_focus(self):
         buttons = self.button_group.buttons()
         for btn in buttons:
@@ -194,9 +184,3 @@ class Ui_user_main(object):
         for btn in buttons:
             if btn.isChecked():
                 btn.setChecked(False)
-
-    def close_win(self):
-        self.cap.release()
-        self.timer.stop()
-        cv2.destroyAllWindows()
-        self.close()

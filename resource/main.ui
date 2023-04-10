@@ -25,31 +25,16 @@
     </property>
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
-      <widget class="QLabel" name="label">
+      <widget class="QPushButton" name="user_info">
        <property name="text">
         <string>用户配置</string>
-       </property>
-       <property name="margin">
-        <number>20</number>
-       </property>
-       <property name="indent">
-        <number>65</number>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QLabel" name="user_info">
-       <property name="frameShadow">
-        <enum>QFrame::Plain</enum>
-       </property>
+      <widget class="QPushButton" name="hand_control">
        <property name="text">
         <string>手势控制</string>
-       </property>
-       <property name="margin">
-        <number>20</number>
-       </property>
-       <property name="indent">
-        <number>65</number>
        </property>
       </widget>
      </item>

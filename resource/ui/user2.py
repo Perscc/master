@@ -10,7 +10,7 @@ import sys
 
 import cv2
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtCore import QTimer, Qt, QCoreApplication
+from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QImage, QPixmap
 from PyQt5.QtWidgets import QButtonGroup
 
@@ -20,18 +20,16 @@ class Ui_user_main(object):
         user_main.setObjectName("user_main")
         user_main.setEnabled(True)
         user_main.resize(900, 500)
-        user_main.setDockNestingEnabled(False)
-        user_main.setDockOptions(QtWidgets.QMainWindow.AllowTabbedDocks|QtWidgets.QMainWindow.AnimatedDocks)
         self.action_container = QtWidgets.QWidget(user_main)
         self.action_container.setEnabled(True)
         self.action_container.setObjectName("action_container")
         self.horizontalLayoutWidget = QtWidgets.QWidget(self.action_container)
-        self.horizontalLayoutWidget.setGeometry(QtCore.QRect(70, 410, 800, 31))
+        self.horizontalLayoutWidget.setGeometry(QtCore.QRect(70, 430, 800, 31))
         self.horizontalLayoutWidget.setObjectName("horizontalLayoutWidget")
         self.operation = QtWidgets.QHBoxLayout(self.horizontalLayoutWidget)
         self.operation.setContentsMargins(0, 0, 0, 0)
         self.operation.setObjectName("operation")
-        self.left_click = QtWidgets.QRadioButton(self.horizontalLayoutWidget)
+        self.left_click = QtWidgets.QCheckBox(self.horizontalLayoutWidget)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -47,7 +45,7 @@ class Ui_user_main(object):
         self.left_click.setAutoExclusive(True)
         self.left_click.setObjectName("left_click")
         self.operation.addWidget(self.left_click)
-        self.right_click = QtWidgets.QRadioButton(self.horizontalLayoutWidget)
+        self.right_click = QtWidgets.QCheckBox(self.horizontalLayoutWidget)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -60,7 +58,7 @@ class Ui_user_main(object):
         self.right_click.setFont(font)
         self.right_click.setObjectName("right_click")
         self.operation.addWidget(self.right_click)
-        self.drag = QtWidgets.QRadioButton(self.horizontalLayoutWidget)
+        self.drag = QtWidgets.QCheckBox(self.horizontalLayoutWidget)
         self.drag.setEnabled(True)
         font = QtGui.QFont()
         font.setFamily("Heiti SC")
@@ -70,7 +68,7 @@ class Ui_user_main(object):
         self.drag.setChecked(False)
         self.drag.setObjectName("drag")
         self.operation.addWidget(self.drag)
-        self.move_mouse = QtWidgets.QRadioButton(self.horizontalLayoutWidget)
+        self.move_mouse = QtWidgets.QCheckBox(self.horizontalLayoutWidget)
         font = QtGui.QFont()
         font.setFamily("Heiti SC")
         font.setBold(True)
@@ -78,7 +76,7 @@ class Ui_user_main(object):
         self.move_mouse.setFont(font)
         self.move_mouse.setObjectName("move_mouse")
         self.operation.addWidget(self.move_mouse)
-        self.down = QtWidgets.QRadioButton(self.horizontalLayoutWidget)
+        self.down = QtWidgets.QCheckBox(self.horizontalLayoutWidget)
         font = QtGui.QFont()
         font.setFamily("Heiti SC")
         font.setBold(True)
@@ -86,7 +84,7 @@ class Ui_user_main(object):
         self.down.setFont(font)
         self.down.setObjectName("down")
         self.operation.addWidget(self.down)
-        self.up = QtWidgets.QRadioButton(self.horizontalLayoutWidget)
+        self.up = QtWidgets.QCheckBox(self.horizontalLayoutWidget)
         font = QtGui.QFont()
         font.setFamily("Heiti SC")
         font.setBold(True)
@@ -94,7 +92,7 @@ class Ui_user_main(object):
         self.up.setFont(font)
         self.up.setObjectName("up")
         self.operation.addWidget(self.up)
-        self.control_vol = QtWidgets.QRadioButton(self.horizontalLayoutWidget)
+        self.control_vol = QtWidgets.QCheckBox(self.horizontalLayoutWidget)
         font = QtGui.QFont()
         font.setFamily("Heiti SC")
         font.setBold(True)
@@ -104,7 +102,7 @@ class Ui_user_main(object):
         self.control_vol.setObjectName("control_vol")
         self.operation.addWidget(self.control_vol)
         self.cap_img = QtWidgets.QLabel(self.action_container)
-        self.cap_img.setGeometry(QtCore.QRect(138, -25, 700, 450))
+        self.cap_img.setGeometry(QtCore.QRect(138, -20, 700, 450))
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -112,15 +110,6 @@ class Ui_user_main(object):
         self.cap_img.setSizePolicy(sizePolicy)
         self.cap_img.setText("")
         self.cap_img.setObjectName("cap_img")
-        self.exist = QtWidgets.QPushButton(self.action_container)
-        self.exist.setGeometry(QtCore.QRect(0, 450, 900, 32))
-        font = QtGui.QFont()
-        font.setFamily("Heiti SC")
-        font.setBold(True)
-        font.setWeight(75)
-        self.exist.setFont(font)
-        self.exist.setObjectName("exist")
-        self.exist.clicked.connect(self.close_win)
         user_main.setCentralWidget(self.action_container)
         self.statusbar = QtWidgets.QStatusBar(user_main)
         self.statusbar.setObjectName("statusbar")
@@ -151,7 +140,6 @@ class Ui_user_main(object):
         self.down.setText(_translate("user_main", "down"))
         self.up.setText(_translate("user_main", "up"))
         self.control_vol.setText(_translate("user_main", "control_vol"))
-        self.exist.setText(_translate("user_main", "exist"))
 
     def start(self):
         try:
@@ -165,7 +153,7 @@ class Ui_user_main(object):
     def next_frame_slot(self):
         try:
             ret, frame = self.cap.read()
-            if ret:
+            if ret == True:
                 frame = cv2.flip(frame, flipCode=1)
                 frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
                 img = QImage(frame, frame.shape[1], frame.shape[0], QImage.Format_RGB888)
@@ -182,21 +170,8 @@ class Ui_user_main(object):
         cv2.destroyAllWindows()
         sys.exit(0)
 
-
     def check_focus(self):
         buttons = self.button_group.buttons()
         for btn in buttons:
             if btn.isChecked():
-                print(btn.isChecked())
-
-    def reset_focus(self):
-        buttons = self.button_group.buttons()
-        for btn in buttons:
-            if btn.isChecked():
-                btn.setChecked(False)
-
-    def close_win(self):
-        self.cap.release()
-        self.timer.stop()
-        cv2.destroyAllWindows()
-        self.close()
+                print(btn.text())

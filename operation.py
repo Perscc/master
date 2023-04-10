@@ -2,16 +2,9 @@ import time
 import numpy as np
 import autopy
 import cv2
-from pycaw.pycaw import AudioUtilities, IAudioEndpointVolume
-from ctypes import cast, POINTER
-from comtypes import CLSCTX_ALL
-# import win32gui, win32process, psutil
-
-
-def exit_process():
-    if cv2.waitKey(1) & 0xFF == 27:  # 每帧滞留20毫秒后消失，ESC键退出
-        return
-
+# from pycaw.pycaw import AudioUtilities, IAudioEndpointVolume
+# from ctypes import cast, POINTER
+# from comtypes import CLSCTX_ALL
 
 def release_resource(cap):
     # 释放视频资源
@@ -19,11 +12,11 @@ def release_resource(cap):
     cv2.destroyAllWindows()
 
 
-def get_volume_info():
-    devices = AudioUtilities.GetSpeakers()
-    interface = devices.Activate(IAudioEndpointVolume._iid_, CLSCTX_ALL, None)
-    volume = cast(interface, POINTER(IAudioEndpointVolume))
-    return volume
+# def get_volume_info():
+#     devices = AudioUtilities.GetSpeakers()
+#     interface = devices.Activate(IAudioEndpointVolume._iid_, CLSCTX_ALL, None)
+#     volume = cast(interface, POINTER(IAudioEndpointVolume))
+#     return volume
 
 
 class Operation:
@@ -218,8 +211,9 @@ class Operation:
                 self.drag(img, fingers, cLocx, cLocy)
                 self.press_up(img, fingers, active_window_process_name)
                 self.press_down(img, fingers, active_window_process_name)
-                self.control_colume_level(img, fingers, cLocx, cLocy, get_volume_info())
+                # self.control_colume_level(img, fingers, cLocx, cLocy, get_volume_info())
             # 显示图像，输入窗口名及图像数据
             self.info_print(img)
-            exit_process()
+            if cv2.waitKey(1) & 0xFF == 27 or cv2.getWindowProperty('frame', cv2.WND_PROP_VISIBLE) < 1.0:  # 每帧滞留20毫秒后消失，ESC键退出或鼠标关闭窗口
+                break
         release_resource(cap)
