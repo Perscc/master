@@ -1,5 +1,5 @@
-from HandTrackingModule import HandDetector
-from operation import Operation
+from logic.HandTrackingModule import HandDetector
+from logic.operation import Operation
 
 if __name__ == '__main__':
     detector = HandDetector(mode=False,  # 视频流图像

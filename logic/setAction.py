@@ -1,4 +1,4 @@
-from HandTrackingModule import HandDetector
+from logic.HandTrackingModule import HandDetector
 
 
 class SetAction:
@@ -15,7 +15,7 @@ class SetAction:
 
     # set_hand_map 设置手势字典
     def set_hand_map(self, action, img):
-        hands, _ = self.detector.findHands(img, flipType=False, draw=True)  # 上面反转过了，这里就不用再翻转了
+        hands, _ = self.detector.findHands(img, flipType=False, draw=True)
         flag = True
         if hands:
             fingers = self.detector.fingersUp(hands[0])
@@ -30,13 +30,13 @@ class SetAction:
                         return not flag
                 # 未使用的手势则添加
                 self.hand_map[action] = fingers
-                self.reset_parms()
+                self.reset_params()
                 return flag
             self.pre_frame = self.frame
             self.frame_number += 1
         return flag
 
-    def reset_parms(self):
+    def reset_params(self):
         self.frame_number = 0
         self.pre_frame = None
         self.frame = None

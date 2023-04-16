@@ -11,16 +11,23 @@ import sys
 
 import cv2
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtCore import QTimer, Qt, QCoreApplication
+from PyQt5.QtCore import QTimer, Qt
 from PyQt5.QtGui import QImage, QPixmap
 from PyQt5.QtWidgets import QButtonGroup, QMessageBox
 
-from HandTrackingModule import HandDetector
 from db.models.db import Sqlite
-from setAction import SetAction
+from logic.setAction import SetAction
+import snowflake.client
 
 
 class Ui_user_main(object):
+    def __init__(self):
+        self.frame_rate = 50
+        self.timer = QTimer()
+        self.cap = cv2.VideoCapture(0)
+        self.db = Sqlite()
+        self.action = SetAction()
+
     def setupUi(self, user_main):
         user_main.setObjectName("user_main")
         user_main.setEnabled(True)
@@ -141,12 +148,6 @@ class Ui_user_main(object):
         self.msg_box = QMessageBox(QMessageBox.Critical, "错误", "手势已存在")
 
         self.retranslateUi(user_main)
-        self.action = SetAction()
-        self.db = Sqlite()
-        self.cap = cv2.VideoCapture(0)
-        self.timer = QTimer()
-        self.frame_rate = 50
-        self.start()
         QtCore.QMetaObject.connectSlotsByName(user_main)
 
     def retranslateUi(self, user_main):
@@ -204,6 +205,11 @@ class Ui_user_main(object):
                     btn.setChecked(False)
                     btn.setEnabled(False)
 
+    def init_default_config(self, user, role_type):
+        self.user = user
+        self.role_type = role_type
+        self.start()
+
     def close_win(self):
         self.cap.release()
         self.timer.stop()
@@ -211,11 +217,13 @@ class Ui_user_main(object):
         self.close()
         if not self.action.hand_map:
             return
-        res = self.db.get_data("a")
+        res = self.db.get_data(self.user)
         if res:
-            data = ("a", json.dumps(self.action.hand_map), res[0])
+            data = (self.user, json.dumps(self.action.hand_map), res[0])
             self.db.update_data(data)
         else:
-            data = (1234567890, "a", json.dumps(self.action.hand_map))
+            # 需启动服务 snowflake_start_server
+            unique_id = snowflake.client.get_guid()
+            data = (unique_id, self.user, json.dumps(self.action.hand_map))
             self.db.insert_data(data)
         self.db.release_conn()

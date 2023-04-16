@@ -17,6 +17,15 @@ class Sqlite:
         )
         """
         self.cursor.execute(user_gesture)
+        user = """
+                CREATE TABLE IF NOT EXISTS t_user(
+                  f_id INTEGER PRIMARY KEY autoincrement NOT NULL ,
+                  f_name VARCHAR(16) NOT NULL,
+                  f_pwd VARCHAR(15) NOT NULL,
+                  f_role_type varchar(5) NOT NULL
+                )
+                """
+        self.cursor.execute(user)
         self.conn.commit()
 
     # release_conn 释放连接
@@ -32,9 +41,9 @@ class Sqlite:
 
     def get_data(self, name):
         sql = """
-            SELECT f_id, f_name, f_gestures FROM t_user_gesture WHERE f_name = ?;
+            SELECT f_id, f_name, f_gestures FROM t_user_gesture WHERE f_name = '%s';
         """
-        self.cursor.execute(sql, name)
+        self.cursor.execute(sql % name)
         res = self.cursor.fetchone()
         return res
 
@@ -44,3 +53,11 @@ class Sqlite:
         """
         self.cursor.execute(sql, data)
         self.conn.commit()
+
+    def get_user(self, name,role_type):
+        sql = """
+            SELECT f_id, f_name, f_pwd, f_role_type FROM t_user WHERE f_name = '%s' AND f_role_type = '%s';
+        """
+        self.cursor.execute(sql % (name,role_type))
+        res = self.cursor.fetchone()
+        return res
